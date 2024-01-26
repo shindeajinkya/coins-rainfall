@@ -1,23 +1,11 @@
-import * as THREE from "three";
-import {
-  Canvas,
-  GroupProps,
-  MeshProps,
-  useFrame,
-  useThree,
-} from "@react-three/fiber";
 import { Environment, useGLTF } from "@react-three/drei";
-import { Suspense, useRef, useState } from "react";
-import {
-  BufferGeometry,
-  Material,
-  Mesh,
-  NormalBufferAttributes,
-  Object3DEventMap,
-} from "three";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { DepthOfField, EffectComposer } from "@react-three/postprocessing";
+import { Suspense, useRef, useState } from "react";
+import * as THREE from "three";
+import { Mesh } from "three";
 
-function Box({ z }) {
+function Box({ z }: { z: number }) {
   const { nodes, materials } = useGLTF("/coin.glb");
 
   const { viewport, camera } = useThree();
@@ -31,13 +19,9 @@ function Box({ z }) {
     rZ: Math.random() * Math.PI,
   });
 
-  const coin = useRef<Mesh<
-    BufferGeometry<NormalBufferAttributes>,
-    Material | Material[],
-    Object3DEventMap
-  > | null>(null);
+  const coin = useRef<THREE.Group<THREE.Object3DEventMap>>(null);
 
-  useFrame((state) => {
+  useFrame(() => {
     if (coin.current) {
       coin.current.position.set(data.x * width, (data.y -= 0.04), z / 2);
       coin.current.rotation.set(
@@ -55,7 +39,7 @@ function Box({ z }) {
   return (
     <group ref={coin} scale={0.15} dispose={null}>
       <mesh
-        geometry={nodes.pCylinder7_standardSurface1_0.geometry}
+        geometry={(nodes.pCylinder7_standardSurface1_0 as Mesh).geometry}
         material={materials["gold-plate"]}
         scale={[9.86, 1.458, 9.86]}
         rotation={[Math.PI * 0.5, 0, 0]}
